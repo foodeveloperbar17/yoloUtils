@@ -6,6 +6,7 @@ from os.path import join
 from os import listdir
 import random
 import numpy as np
+from PIL import Image
 
 def get_images_from_video(video_path, dir_to_result_images,
                           class_prefix, every_n_image=1, file_extention='jpg',
@@ -344,3 +345,23 @@ def get_video_from_images(images_dir, video_path, fps):
   for img in [join(images_dir, f) for f in os.listdir(images_dir) if f.endswith('jpg')]:
     video_writer.write(cv2.imread(img))
   video_writer.release()
+
+def reduce_image_sizes(src_parent_dir, dest_parent_dir, width, height):
+  if os.path.isdir(dest_parent_dir):
+    shutil.rmtree(dest_parent_dir)
+    os.mkdir(dest_parent_dir)
+  src_dirs = os.listdir(src_parent_dir)
+  print(src_dirs)
+  for s in src_dirs:
+    if s[0] is '.':
+      continue
+    
+    src_dir = join(src_parent_dir, s)
+    dest_dir = join(dest_parent_dir, s)
+    os.mkdir(dest_dir)
+    print(src_dir)
+    print(dest_dir)
+    for f in os.listdir(src_dir):
+      img = Image.open(join(src_dir, f))
+      img = img.resize((width, height), Image.ANTIALIAS)
+      img.save(join(dest_dir, f), quality=90)
