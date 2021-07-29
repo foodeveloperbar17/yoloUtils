@@ -373,11 +373,3 @@ def get_last_exp(runs_dir):
   indexes.sort()
   last_index = indexes[-1]
   return 'exp' + str(last_index)
-
-def download_runs_with_suffix(suffix, runs_dir):
-  last_exp = join(runs_dir, get_last_exp(runs_dir))
-  zip_name = 'runs' + suffix + '.zip'
-  if os.path.exists(zip_name):
-    os.remove(zip_name)
-  !zip -q -r {zip_name} {last_exp}
-  files.download(zip_name)
