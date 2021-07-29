@@ -33,26 +33,25 @@ def get_images_from_video(video_path, dir_to_result_images,
   print('time for video was ', time.time() - tic)
 
 def copy_partial_files(src, dest, ratio):
-  files_to_copy = [f for f in os.listdir(src) if random.uniform(0, 1) < ratio]
+  files_to_copy = [f for f in listdir(src) if random.uniform(0, 1) < ratio]
   for f in files_to_copy:
     shutil.copy2(join(src, f), join(dest, f))
 
-def copy_labeled_images(src, dest, image_extention='jpg'):
-  text_files = get_text_files_from_dir(src)
-  for text_file_name in text_files:
+def copy_labeled_images_with_labels(src, dest, image_extention='jpg'):
+  for text_file_name in get_text_files_from_dir(src):
     image_file_name = text_file_name[:-4] + '.' + image_extention
     shutil.copy2(join(src, text_file_name), join(dest, text_file_name))
     shutil.copy2(join(src, image_file_name), join(dest, image_file_name))
 
 def copy_labels_to_dir(src, dest):
   text_files = get_text_files_from_dir(src)
-  print(len(os.listdir(dest)))
+  print(len(listdir(dest)))
   for text_file in text_files:
     shutil.copy2(join(src, text_file), join(dest, text_file))
-  print(len(os.listdir(dest)))
+  print(len(listdir(dest)))
 
 def get_text_files_from_dir(dir_path):
-  return [f for f in os.listdir(dir_path) if f.endswith('.txt')]
+  return [f for f in listdir(dir_path) if f.endswith('.txt')]
 
 def force_create_folder(dir_path):
   if os.path.exists(dir_path):
@@ -72,8 +71,7 @@ def train_test_split(image_src, label_src, train_dir, valid_dir, test_dir, valid
   force_create_folder(join(test_dir, 'labels'))
   force_create_folder(join(test_dir, 'images'))
   
-  text_files = get_text_files_from_dir(label_src)
-  for text_file in text_files:
+  for text_file in get_text_files_from_dir(label_src):
     image_file = text_file[:-4] + '.' + image_extention
     curr_image_src = join(image_src, image_file)
     if not os.path.exists(curr_image_src):
@@ -99,7 +97,7 @@ def train_test_split(image_src, label_src, train_dir, valid_dir, test_dir, valid
   print('images absent ' + str(absent))
     
 def change_class_labels(dir, new_class):
-  all_text_files = [f for f in os.listdir(dir) if f.endswith('.txt')]
+  all_text_files = [f for f in listdir(dir) if f.endswith('.txt')]
   for f in all_text_files:
     old_path = join(dir, f)
     new_path = join(dir, f + '.luka')
@@ -114,14 +112,12 @@ def change_class_labels(dir, new_class):
     os.rename(new_path, old_path)
 
 def copy_n_items(src, dest, n_items):
-  # TEST
-  print(len(os.listdir(dest)))
+  print(len(listdir(dest)))
   
-  for f in os.listdir(src)[:n_items]:
+  for f in listdir(src)[:n_items]:
     shutil.copy2(join(src, f), join(dest, f))
   
-  # TEST
-  print(len(os.listdir(dest)))
+  print(len(listdir(dest)))
 
 def get_text_paths_for_class(path, cls):
   class_keyword = str(cls) + 'frame'
@@ -140,7 +136,6 @@ def get_coordinates_with_file_index_from_textfiles(textfiles_list):
       curr_coords = []
       lines = reader.readlines()
       for line in lines:
-        parts = line.split()
         curr_coords.append([float(num) for num in line.split()[1:]])
       index = get_index_from_file_name(textfile)
       coords_with_textfiles.append((index, curr_coords))
@@ -281,7 +276,7 @@ def filter_text_labels(src, dest, width, height):
     if os.path.exists(dest):
         shutil.rmtree(dest)
     os.mkdir(dest)
-    textfiles = [f for f in os.listdir(src) if f.endswith('.txt')]
+    textfiles = [f for f in listdir(src) if f.endswith('.txt')]
     for f in textfiles:
         old_file_path = join(src, f)
         new_file_path = join(dest, f)
@@ -303,7 +298,7 @@ def filter_text_labels(src, dest, width, height):
 
 def see_classes_distribution(labels_folder):
   distributions = [0, 0, 0, 0]
-  for f in os.listdir(labels_folder):
+  for f in listdir(labels_folder):
     if f.endswith('.txt'):
       with open(join(labels_folder, f), 'r') as reader:
         for line in reader.readlines():
@@ -328,7 +323,7 @@ def copy_image_with_label(image_src, label_src, dest, label_name, image_extentio
 def distribute_evenly(src, dest, class_prefixes, num_instance):
   for class_prefix in class_prefixes:
     class_count = 0
-    for class_text_file in [f for f in os.listdir(src) if f.endswith('.txt') and f[0] == class_prefix]:
+    for class_text_file in [f for f in listdir(src) if f.endswith('.txt') and f[0] == class_prefix]:
       with open(join(src, class_text_file), 'r') as reader:
         class_count += len(reader.readlines())
       copy_image_with_label(src, src, dest, class_text_file)
@@ -342,7 +337,7 @@ def get_video_from_images(images_dir, video_path, fps):
     os.remove(video_path)
   fourcc = 'mp4v'
   video_writer = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*fourcc), fps, (640, 480))
-  for img in [join(images_dir, f) for f in os.listdir(images_dir) if f.endswith('jpg')]:
+  for img in [join(images_dir, f) for f in listdir(images_dir) if f.endswith('jpg')]:
     video_writer.write(cv2.imread(img))
   video_writer.release()
 
@@ -350,7 +345,7 @@ def reduce_image_sizes(src_parent_dir, dest_parent_dir, width, height):
   if os.path.isdir(dest_parent_dir):
     shutil.rmtree(dest_parent_dir)
     os.mkdir(dest_parent_dir)
-  src_dirs = os.listdir(src_parent_dir)
+  src_dirs = listdir(src_parent_dir)
   print(src_dirs)
   for s in src_dirs:
     if s[0] is '.':
@@ -361,7 +356,28 @@ def reduce_image_sizes(src_parent_dir, dest_parent_dir, width, height):
     os.mkdir(dest_dir)
     print(src_dir)
     print(dest_dir)
-    for f in os.listdir(src_dir):
+    for f in listdir(src_dir):
       img = Image.open(join(src_dir, f))
       img = img.resize((width, height), Image.ANTIALIAS)
       img.save(join(dest_dir, f), quality=90)
+
+def copy_files_with_extentions(src, dest, extention):
+  for f in listdir(src):
+    if extention in f:
+      prev_path = join(src, f)
+      new_path = join(dest, f)
+      shutil.copy2(prev_path, new_path)
+
+def get_last_exp(runs_dir):
+  indexes = [int(f[3:]) for f in listdir(runs_dir)]
+  indexes.sort()
+  last_index = indexes[-1]
+  return 'exp' + str(last_index)
+
+def download_runs_with_suffix(suffix, runs_dir):
+  last_exp = join(runs_dir, get_last_exp(runs_dir))
+  zip_name = 'runs' + suffix + '.zip'
+  if os.path.exists(zip_name):
+    os.remove(zip_name)
+  !zip -q -r {zip_name} {last_exp}
+  files.download(zip_name)
