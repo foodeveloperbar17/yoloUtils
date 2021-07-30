@@ -354,7 +354,9 @@ def reduce_image_sizes(src_parent_dir, dest_parent_dir, width, height, extention
     os.mkdir(dest_dir)
     print(src_dir)
     print(dest_dir)
-    for f in listdir(src_dir):
+    files_in_dir = listdir(src_dir)
+    print(len(files_in_dir))
+    for f in files_in_dir:
       if not f.endswith(extention):
         continue
       img = Image.open(join(src_dir, f))
