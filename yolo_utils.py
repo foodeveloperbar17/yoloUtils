@@ -341,10 +341,8 @@ def get_video_from_images(images_dir, video_path, fps):
     video_writer.write(cv2.imread(img))
   video_writer.release()
 
-def reduce_image_sizes(src_parent_dir, dest_parent_dir, width, height):
-  if os.path.isdir(dest_parent_dir):
-    shutil.rmtree(dest_parent_dir)
-    os.mkdir(dest_parent_dir)
+def reduce_image_sizes(src_parent_dir, dest_parent_dir, width, height, extention='jpg'):
+  force_create_folder(dest_parent_dir)
   src_dirs = listdir(src_parent_dir)
   print(src_dirs)
   for s in src_dirs:
@@ -357,6 +355,8 @@ def reduce_image_sizes(src_parent_dir, dest_parent_dir, width, height):
     print(src_dir)
     print(dest_dir)
     for f in listdir(src_dir):
+      if not f.endswith(extention):
+        continue
       img = Image.open(join(src_dir, f))
       img = img.resize((width, height), Image.ANTIALIAS)
       img.save(join(dest_dir, f), quality=90)
